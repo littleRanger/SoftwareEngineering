@@ -3,6 +3,7 @@
 #include <string.h>
 #include <time.h>
 #include <ctype.h>
+#include <unistd.h>
 #include "menu.h"
 
 int MenuConfig(char * cmd, char * desc, int (*handler)(int argc, char *argv[]));
@@ -11,11 +12,41 @@ int Quit(int argc, char *argv[]);
 int GetLocaltime(int argc, char *argv[]);
 int Fl(int argc, char *argv[]);
 int atoi_s(char s[],int len);
+int argtest(int argc, char **argv)
+{
+    const char *optString = "lah";
+    opterr = 0;
+    int opt;
+    while ((opt = getopt(argc, argv, optString)) != -1)
+    {
+        switch (opt)
+        {
+            case 'l':
+                printf("this -l option\n");
+                break;            
+            case 'a':
+                printf("this -a option\n");
+                break;
+            case 'h':
+                printf("in this cmd, you have 3 option can use:\n");
+                printf("-l\n");
+                printf("-a\n");
+                printf("-h\n");
+                break;
+            default:
+                break;
+        }
+    }
+    // reset global valuable optind
+    optind = 0;
+    return 0;
+}
 int main(int argc, char * argv[])
 {
     MenuConfig("quit","exit from the menu!",Quit);
     MenuConfig("time","show the BeiJingTime!",GetLocaltime);
     MenuConfig("factorial","nx(n-1)x...x1",Fl);
+    MenuConfig("argtest","a test for getopt!",argtest);
     ExcuteMenu();
     return 0;
 }
